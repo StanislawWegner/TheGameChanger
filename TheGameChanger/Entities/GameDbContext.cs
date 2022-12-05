@@ -4,10 +4,13 @@ namespace TheGameChanger.Entities
 {
     public class GameDbContext : DbContext
     {
+        public GameDbContext(DbContextOptions<GameDbContext> options) : base(options)
+        {
+
+        }
         public DbSet<Game> Games { get; set; }
         public DbSet<TypeOfGame> Types { get; set; }
 
-        private string _connectionString = "Server=(localdb)\\mssqllocaldb;Database=TheGameChangerDb;Trusted_Connection=True;";
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Game>(eb =>
@@ -25,10 +28,9 @@ namespace TheGameChanger.Entities
             });
         }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlServer(_connectionString);
-        }
+       
+
+        
     }
 
 

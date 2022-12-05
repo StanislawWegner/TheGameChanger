@@ -19,7 +19,7 @@ namespace TheGameChanger.Middleware
             catch
             {
                 context.Response.StatusCode = 500;
-                await context.Response.WriteAsync("Oj jo joj, coś nie pykło");
+                await context.Response.WriteAsync("unhandled error");
             }
         }
     }
