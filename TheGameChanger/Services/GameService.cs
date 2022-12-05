@@ -11,6 +11,8 @@ namespace TheGameChanger.Services
         IEnumerable<GameDto> GetAll();
         GameDto CreateGame(CreateGameDto dto, int typeOfGameId);
         GameDto GetById(int id);
+
+        GameDto GetByName(string gameName);
         void DeleteGame(int id);
         GameDto UpdateGame(int id, CreateGameDto gameDto);
         void DeleteAllGames();
@@ -47,6 +49,21 @@ namespace TheGameChanger.Services
                 .Games
                 .Include(g => g.TypeOfGame)
                 .FirstOrDefault(g => g.Id == id);
+
+            if (game is null)
+                throw new NotFoundException("Game not found");
+
+            var result = _mapper.Map<GameDto>(game);
+
+            return result;
+        }
+
+        public GameDto GetByName(string gameName)
+        {
+            var game = _dbContext
+                .Games
+                .Include(g => g.TypeOfGame)
+                .FirstOrDefault(g => g.Name.ToLower() == gameName.ToLower());
 
             if (game is null)
                 throw new NotFoundException("Game not found");
