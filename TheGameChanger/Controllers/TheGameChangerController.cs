@@ -57,7 +57,7 @@ namespace TheGameChanger.Controllers
             return Ok(updatedGame); 
         }
 
-        [HttpDelete]
+        [HttpDelete("deleteAll")]
         public ActionResult DeleteAllGames()
         {
             _gameService.DeleteAllGames();
