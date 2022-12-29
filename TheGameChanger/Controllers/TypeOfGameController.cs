@@ -29,6 +29,12 @@ namespace TheGameChanger.Controllers
             return Ok(_typeOfGameService.GetAllTypesOfGamesDto());
         }
 
+        [HttpGet("typeName/{typeName}")]
+        public ActionResult<TypeOfGameDto> GetTypeByName([FromRoute] string typeName)
+        {
+            return Ok(_typeOfGameService.GetTypeByName(typeName));
+        }
+
         [HttpDelete("deleteAll")]
         public ActionResult DeleteAllTypesOfGames()
         {

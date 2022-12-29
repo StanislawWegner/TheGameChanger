@@ -12,6 +12,7 @@ namespace TheGameChanger.Services
         void DeleteOneType(int id);
         List<TypeOfGameDto> GetAllTypesOfGamesDto();
         TypeOfGameDto UpdateTypeOfGame(int id, CreateTypOfGameDto dto);
+        TypeOfGameDto GetTypeByName(string typeName);
     }
 
     public class TypeOfGameService : ITypeOfGameService
@@ -41,6 +42,20 @@ namespace TheGameChanger.Services
             var listOfTypesDto = _mapper.Map<List<TypeOfGameDto>>(listOfTypes);
 
             return listOfTypesDto;
+        }
+
+        public TypeOfGameDto GetTypeByName(string typeName)
+        {
+            var type = _dbContext.Types.FirstOrDefault(t => t.Name.ToLower() == typeName.ToLower());
+
+            if(type is null)
+            {
+                throw new NotFoundException("Type not found");
+            }
+
+           var result = _mapper.Map<TypeOfGameDto>(type);
+            
+           return result;
         }
 
         public void DeleteAllTypesOfGames()
