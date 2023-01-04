@@ -9,7 +9,7 @@ namespace TheGameChanger
         public GameMappingProfile()
         {
             CreateMap<Game, GameDto>()
-                .ForMember(m => m.Genre, c => c.MapFrom(s => s.TypeOfGame.Name));
+                .ForMember(m => m.Type, c => c.MapFrom(s => s.TypeOfGame.Name));
 
             CreateMap<TypeOfGame, TypeOfGameDto>();
 
@@ -17,6 +17,8 @@ namespace TheGameChanger
 
             CreateMap<CreateTypOfGameDto, TypeOfGame>();
             CreateMap<Game, CounterPointsDto>();
+
+           
 
         }
     }

@@ -7,8 +7,10 @@ namespace TheGameChanger.Models
         [Required]
         [MaxLength(25)]
         public string Name { get; set; }
+        public string Type { get; set; }
 
-        
+
+
 
     }
 }

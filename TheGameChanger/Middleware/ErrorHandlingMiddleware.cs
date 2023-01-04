@@ -16,6 +16,11 @@ namespace TheGameChanger.Middleware
                 await context.Response.WriteAsync(exceptionNotFound.Message);
 
             }
+            catch(DataExistsException exceptionDatasExist)
+            {
+                context.Response.StatusCode = 409;
+                await context.Response.WriteAsync(exceptionDatasExist.Message);
+            }
             catch
             {
                 context.Response.StatusCode = 500;

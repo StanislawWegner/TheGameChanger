@@ -9,7 +9,7 @@ namespace TheGameChanger.Services
     public interface IGameService
     {
         IEnumerable<GameDto> GetAll();
-        GameDto CreateGame(CreateGameDto dto, int typeOfGameId);
+        GameDto CreateGame(CreateGameDto dto);
         GameDto GetById(int id);
 
         GameDto GetByName(string gameName);
@@ -63,7 +63,7 @@ namespace TheGameChanger.Services
             var game = _dbContext
                 .Games
                 .Include(g => g.TypeOfGame)
-                .FirstOrDefault(g => g.Name.ToLower() == gameName.ToLower());
+                .FirstOrDefault(g => g.Name.ToLower().Replace(" ", "") == gameName.ToLower().Replace(" ", ""));
 
             if (game is null)
                 throw new NotFoundException("Game not found");
@@ -73,20 +73,31 @@ namespace TheGameChanger.Services
             return result;
         }
 
-        public GameDto CreateGame(CreateGameDto dto, int typeOfGameId)
+        public GameDto CreateGame(CreateGameDto dto)
         {
-            var listOfTypes = _dbContext.Types.ToList();
+            var game = _dbContext
+                .Games
+                .FirstOrDefault(g => g.Name.ToLower().Replace(" ","") == dto.Name.ToLower().Replace(" ", ""));
 
-            var genre = listOfTypes.FirstOrDefault(t => t.Id == typeOfGameId);
-            if (genre is null)
+            if(game != null)
+            {
+                throw new DataExistsException("Game with that name already exists");
+            }
+            
+            var type = _dbContext
+                .Types
+                .ToList()
+                .FirstOrDefault(t => t.Name.ToLower().Replace(" ", "") == dto.Type.ToLower().Replace(" ",""));
+
+            if (type is null)
                 throw new NotFoundException("This type of game do not exist");
 
-            var game = _mapper.Map<Game>(dto);
-            game.TypeOfGameId = typeOfGameId;
-            _dbContext.Games.Add(game);
+            var newGame = _mapper.Map<Game>(dto);
+            newGame.TypeOfGameId = type.Id;
+            _dbContext.Games.Add(newGame);
 
             _dbContext.SaveChanges();
-            var gameDto = _mapper.Map<GameDto>(game);
+            var gameDto = _mapper.Map<GameDto>(newGame);
 
             return gameDto;
         }

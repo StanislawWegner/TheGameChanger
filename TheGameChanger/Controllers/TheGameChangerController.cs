@@ -34,12 +34,12 @@ namespace TheGameChanger.Controllers
             return Ok(_gameService.GetByName(gameName));
         }
 
-        [HttpPost("{typeOfGameId}")]
-        public ActionResult CreateGame([FromBody] CreateGameDto dto, [FromRoute] int typeOfGameId)
+        [HttpPost("newGame")]
+        public ActionResult CreateGame([FromBody] CreateGameDto dto)
         {
-            var gameDto = _gameService.CreateGame(dto, typeOfGameId);
+            var gameDto = _gameService.CreateGame(dto);
 
-            return Created($"/game/{typeOfGameId}", gameDto);
+            return Created($"/game/gameName/{gameDto.Name}", gameDto);
         }
 
         [HttpDelete("{id}")]
