@@ -13,7 +13,7 @@ namespace TheGameChanger.Services
         GameDto GetById(int id);
 
         GameDto GetByName(string gameName);
-        void DeleteGame(int id);
+        void DeleteGame(CreateGameDto dto);
         GameDto UpdateGame(int id, CreateGameDto gameDto);
         void DeleteAllGames();
         List<GameDto> GamesOlderThan30Days();
@@ -102,12 +102,22 @@ namespace TheGameChanger.Services
             return gameDto;
         }
 
-        public void DeleteGame(int id)
+        public void DeleteGame(CreateGameDto dto)
         {
-            var game = _dbContext.Games.FirstOrDefault(g => g.Id == id);
+            var game = _dbContext.Games.FirstOrDefault
+                (g => g.Name.ToLower().Replace(" ", "") == dto.Name.ToLower().Replace(" ", ""));
 
             if (game is null)
-                throw new NotFoundException("Game not found");
+                throw new NotFoundException("Game with this name do not exists");
+
+            var type = _dbContext.Types.FirstOrDefault
+                (t => t.Name.ToLower().Replace(" ", "") == dto.Type.ToLower().Replace(" ", ""));
+
+            if (type is null)
+                throw new NotFoundException("This type of game do not exist");
+
+            if (game.TypeOfGameId != type.Id)
+                throw new NotFoundException("Name and type do not belong to the same game");
 
             _dbContext.Games.Remove(game);
             _dbContext.SaveChanges();

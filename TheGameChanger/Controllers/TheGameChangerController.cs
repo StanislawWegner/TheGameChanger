@@ -42,10 +42,10 @@ namespace TheGameChanger.Controllers
             return Created($"/game/gameName/{gameDto.Name}", gameDto);
         }
 
-        [HttpDelete("{id}")]
-        public ActionResult DeleteGame([FromRoute] int id)
+        [HttpDelete("deleteOneGame")]
+        public ActionResult DeleteGame([FromBody] CreateGameDto dto)
         {
-            _gameService.DeleteGame(id);
+            _gameService.DeleteGame(dto);
             return Ok("Game was deleted");
         }
 

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using TheGameChanger.Entities;
 using TheGameChanger.Exceptions;
 using TheGameChanger.Models;
@@ -9,10 +10,11 @@ namespace TheGameChanger.Services
     {
         TypeOfGameDto CreateTypeOfGame(CreateTypOfGameDto dto);
         void DeleteAllTypesOfGames();
-        void DeleteOneType(int id);
+        void DeleteOneType(string typeName);
         List<TypeOfGameDto> GetAllTypesOfGamesDto();
         TypeOfGameDto UpdateTypeOfGame(int id, CreateTypOfGameDto dto);
         TypeOfGameDto GetTypeByName(string typeName);
+        IEnumerable<GameDto> QuantityOfGamesInOneType(string typeName);
     }
 
     public class TypeOfGameService : ITypeOfGameService
@@ -64,13 +66,38 @@ namespace TheGameChanger.Services
             _dbContext.SaveChanges();
         }
 
-        public void DeleteOneType(int id)
+        public void DeleteOneType(string typeName)
         {
-            var type = _dbContext.Types.FirstOrDefault(t => t.Id == id);
+            var type = _dbContext.Types.FirstOrDefault
+                (t => t.Name.ToLower().Replace(" ", "") == typeName.ToLower().Replace(" ",""));
             if (type is null)
                 throw new NotFoundException("Type was not found");
+
+            
             _dbContext.Remove(type);
             _dbContext.SaveChanges();
+        }
+
+        public IEnumerable<GameDto> QuantityOfGamesInOneType(string typeName)
+        {
+            var type = _dbContext
+                .Types
+                .Include(t => t.Games)
+                .FirstOrDefault
+                (t => t.Name.ToLower().Replace(" ", "") == typeName.ToLower().Replace(" ", ""));
+
+            if (type is null)
+                throw new NotFoundException("Type was not found");
+
+            //var game = _dbContext
+            //    .Games
+            //    .Include(g => g.TypeOfGame)
+            //    .Where(g => g.TypeOfGameId == type.Id);
+
+            var games =  type.Games.ToList();
+
+            var gamesDto = _mapper.Map<List<GameDto>>(games);
+            return gamesDto;
         }
 
         public TypeOfGameDto UpdateTypeOfGame(int id, CreateTypOfGameDto dto)

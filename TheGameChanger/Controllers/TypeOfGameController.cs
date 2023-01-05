@@ -4,7 +4,7 @@ using TheGameChanger.Services;
 
 namespace TheGameChanger.Controllers
 {
-    [Route("genre")]
+    [Route("type")]
     [ApiController]
     public class TypeOfGameController : ControllerBase
     {
@@ -20,7 +20,7 @@ namespace TheGameChanger.Controllers
         {
             var typeOfGameDto = _typeOfGameService.CreateTypeOfGame(dto);
 
-            return Created($"genre/{typeOfGameDto}", typeOfGameDto);
+            return Created($"type/typeName/{typeOfGameDto.Name}", typeOfGameDto);
         }
 
         [HttpGet]
@@ -42,13 +42,22 @@ namespace TheGameChanger.Controllers
             return Ok("All types of games deleted");
         }
 
-        [HttpDelete("delete/{id}")]
-        public ActionResult DeleteById([FromRoute] int id)
+        [HttpDelete("deleteOneType/{typeName}")]
+        public ActionResult DeleteById([FromRoute] string typeName)
         {
-            _typeOfGameService.DeleteOneType(id);
+            _typeOfGameService.DeleteOneType(typeName);
 
-            return Ok("Genre is deleted");
+            return Ok("Type is deleted");
         }
+
+        [HttpGet("gameQuantity/{typeName}")]
+        public ActionResult<IEnumerable<GameDto>> GetQuantityOfGamesInOneType([FromRoute] string typeName)
+        {
+            var result = _typeOfGameService.QuantityOfGamesInOneType(typeName);
+
+            return Ok(result);
+        }
+
         [HttpPut("update/{id}")]
         public ActionResult<TypeOfGameDto> UpdateTypeOfGame([FromRoute]int id, [FromBody]CreateTypOfGameDto dto)
         {
