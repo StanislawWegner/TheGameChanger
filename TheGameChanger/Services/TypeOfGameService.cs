@@ -15,6 +15,7 @@ namespace TheGameChanger.Services
         TypeOfGameDto UpdateTypeOfGame(int id, CreateTypOfGameDto dto);
         TypeOfGameDto GetTypeByName(string typeName);
         IEnumerable<GameDto> ListOfGamesForOneType(string typeName);
+        int QuantityOfGamesForOneType(string typeName);
     }
 
     public class TypeOfGameService : ITypeOfGameService
@@ -94,6 +95,22 @@ namespace TheGameChanger.Services
 
             var gamesDto = _mapper.Map<List<GameDto>>(games);
             return gamesDto;
+        }
+
+        public int QuantityOfGamesForOneType(string typeName)
+        {
+            var type = _dbContext
+               .Types
+               .Include(t => t.Games)
+               .FirstOrDefault
+               (t => t.Name.ToLower().Replace(" ", "") == typeName.ToLower().Replace(" ", ""));
+
+            if (type is null)
+                throw new NotFoundException("Type was not found");
+
+            var gamesQuantity = type.Games.Count;
+
+            return gamesQuantity;
         }
 
         public TypeOfGameDto UpdateTypeOfGame(int id, CreateTypOfGameDto dto)

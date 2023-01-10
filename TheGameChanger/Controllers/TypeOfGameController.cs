@@ -50,11 +50,18 @@ namespace TheGameChanger.Controllers
             return NoContent();
         }
 
-        [HttpGet("gameQuantity/{typeName}")]
+        [HttpGet("gameList/{typeName}")]
         public ActionResult<IEnumerable<GameDto>> GetListOfGamesForOneType([FromRoute] string typeName)
         {
             var result = _typeOfGameService.ListOfGamesForOneType(typeName);
 
+            return Ok(result);
+        }
+
+        [HttpGet("gameQuantity/{typeName}")]
+        public ActionResult<int> GetQuantityOfGamesForOneType([FromRoute] string typeName)
+        {
+            var result = _typeOfGameService.QuantityOfGamesForOneType(typeName);
             return Ok(result);
         }
 
