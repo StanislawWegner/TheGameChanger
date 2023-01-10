@@ -1,4 +1,5 @@
-﻿using TheGameChanger.Exceptions;
+﻿using Newtonsoft.Json;
+using TheGameChanger.Exceptions;
 
 namespace TheGameChanger.Middleware
 {
@@ -12,14 +13,17 @@ namespace TheGameChanger.Middleware
             }
             catch(NotFoundException exceptionNotFound)
             {
+                var result = JsonConvert.SerializeObject(new {error = exceptionNotFound.Message});
                 context.Response.StatusCode = 404;
-                await context.Response.WriteAsync(exceptionNotFound.Message);
+
+                await context.Response.WriteAsync(result);
 
             }
-            catch(DataExistsException exceptionDatasExist)
+            catch(DataExistsException exceptionDataExist)
             {
                 context.Response.StatusCode = 409;
-                await context.Response.WriteAsync(exceptionDatasExist.Message);
+                var result = JsonConvert.SerializeObject(new { error = exceptionDataExist.Message});
+                await context.Response.WriteAsync(result);
             }
             catch
             {

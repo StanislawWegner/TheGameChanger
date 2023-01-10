@@ -10,8 +10,6 @@ namespace TheGameChanger.Services
     {
         IEnumerable<GameDto> GetAll();
         GameDto CreateGame(CreateGameDto dto);
-        GameDto GetById(int id);
-
         GameDto GetByName(string gameName);
         void DeleteGame(CreateGameDto dto);
         GameDto UpdateGame(int id, CreateGameDto gameDto);
@@ -41,21 +39,6 @@ namespace TheGameChanger.Services
 
             var gamesDto = _mapper.Map<List<GameDto>>(games);
             return gamesDto;
-        }
-
-        public GameDto GetById(int id)
-        {
-            var game = _dbContext
-                .Games
-                .Include(g => g.TypeOfGame)
-                .FirstOrDefault(g => g.Id == id);
-
-            if (game is null)
-                throw new NotFoundException("Game not found");
-
-            var result = _mapper.Map<GameDto>(game);
-
-            return result;
         }
 
         public GameDto GetByName(string gameName)
@@ -90,7 +73,7 @@ namespace TheGameChanger.Services
                 .FirstOrDefault(t => t.Name.ToLower().Replace(" ", "") == dto.Type.ToLower().Replace(" ",""));
 
             if (type is null)
-                throw new NotFoundException("This type of game do not exist");
+                throw new NotFoundException("This type of game do not exists");
 
             var newGame = _mapper.Map<Game>(dto);
             newGame.TypeOfGameId = type.Id;

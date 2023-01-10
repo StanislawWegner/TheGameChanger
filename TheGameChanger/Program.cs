@@ -45,6 +45,7 @@ if (app.Environment.IsDevelopment())
 
 
 app.UseMiddleware<ErrorHandlingMiddleware>();
+
 app.UseHttpsRedirection();
 
 app.UseAuthorization();

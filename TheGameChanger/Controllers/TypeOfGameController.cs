@@ -43,17 +43,17 @@ namespace TheGameChanger.Controllers
         }
 
         [HttpDelete("deleteOneType/{typeName}")]
-        public ActionResult DeleteById([FromRoute] string typeName)
+        public ActionResult DeleteByTypName([FromRoute] string typeName)
         {
             _typeOfGameService.DeleteOneType(typeName);
 
-            return Ok("Type is deleted");
+            return NoContent();
         }
 
         [HttpGet("gameQuantity/{typeName}")]
-        public ActionResult<IEnumerable<GameDto>> GetQuantityOfGamesInOneType([FromRoute] string typeName)
+        public ActionResult<IEnumerable<GameDto>> GetListOfGamesForOneType([FromRoute] string typeName)
         {
-            var result = _typeOfGameService.QuantityOfGamesInOneType(typeName);
+            var result = _typeOfGameService.ListOfGamesForOneType(typeName);
 
             return Ok(result);
         }

@@ -22,11 +22,6 @@ namespace TheGameChanger.Controllers
             return Ok(_gameService.GetAll());
         }
 
-        [HttpGet("{id}")]
-        public ActionResult<GameDto> GetGameById([FromRoute] int id)
-        {
-            return Ok(_gameService.GetById(id));
-        }
 
         [HttpGet("gameName/{gameName}")]
         public ActionResult<GameDto> GetGameByName([FromRoute] string gameName)
@@ -46,7 +41,7 @@ namespace TheGameChanger.Controllers
         public ActionResult DeleteGame([FromBody] CreateGameDto dto)
         {
             _gameService.DeleteGame(dto);
-            return Ok("Game was deleted");
+            return NoContent();
         }
 
         [HttpPut("{id}")]

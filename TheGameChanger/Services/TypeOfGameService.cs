@@ -14,7 +14,7 @@ namespace TheGameChanger.Services
         List<TypeOfGameDto> GetAllTypesOfGamesDto();
         TypeOfGameDto UpdateTypeOfGame(int id, CreateTypOfGameDto dto);
         TypeOfGameDto GetTypeByName(string typeName);
-        IEnumerable<GameDto> QuantityOfGamesInOneType(string typeName);
+        IEnumerable<GameDto> ListOfGamesForOneType(string typeName);
     }
 
     public class TypeOfGameService : ITypeOfGameService
@@ -50,12 +50,12 @@ namespace TheGameChanger.Services
         {
             var type = _dbContext.Types.FirstOrDefault(t => t.Name.ToLower() == typeName.ToLower());
 
-            if(type is null)
+            if (type is null)
             {
                 throw new NotFoundException("Type not found");
             }
 
-           var result = _mapper.Map<TypeOfGameDto>(type);
+            var result = _mapper.Map<TypeOfGameDto>(type);
             
            return result;
         }
@@ -68,17 +68,18 @@ namespace TheGameChanger.Services
 
         public void DeleteOneType(string typeName)
         {
-            var type = _dbContext.Types.FirstOrDefault
+            var type = _dbContext
+                .Types
+                .FirstOrDefault
                 (t => t.Name.ToLower().Replace(" ", "") == typeName.ToLower().Replace(" ",""));
             if (type is null)
                 throw new NotFoundException("Type was not found");
-
             
             _dbContext.Remove(type);
             _dbContext.SaveChanges();
         }
 
-        public IEnumerable<GameDto> QuantityOfGamesInOneType(string typeName)
+        public IEnumerable<GameDto> ListOfGamesForOneType(string typeName)
         {
             var type = _dbContext
                 .Types
@@ -88,11 +89,6 @@ namespace TheGameChanger.Services
 
             if (type is null)
                 throw new NotFoundException("Type was not found");
-
-            //var game = _dbContext
-            //    .Games
-            //    .Include(g => g.TypeOfGame)
-            //    .Where(g => g.TypeOfGameId == type.Id);
 
             var games =  type.Games.ToList();
 
