@@ -49,7 +49,8 @@ namespace TheGameChanger.Services
 
         public TypeOfGameDto GetTypeByName(string typeName)
         {
-            var type = _dbContext.Types.FirstOrDefault(t => t.Name.ToLower() == typeName.ToLower());
+            var type = _dbContext.Types
+                .FirstOrDefault(t => t.Name.ToLower().Replace(" ", "") == typeName.ToLower().Replace(" ", ""));
 
             if (type is null)
             {

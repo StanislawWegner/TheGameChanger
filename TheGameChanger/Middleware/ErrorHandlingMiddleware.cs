@@ -28,7 +28,8 @@ namespace TheGameChanger.Middleware
             catch
             {
                 context.Response.StatusCode = 500;
-                await context.Response.WriteAsync("unhandled error");
+                var result = JsonConvert.SerializeObject(new { error = "unhandled Exception" });
+                await context.Response.WriteAsync(result);
             }
         }
     }
