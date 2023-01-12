@@ -65,12 +65,12 @@ namespace TheGameChanger.Controllers
             return Ok(result);
         }
 
-        [HttpPut("update/{id}")]
-        public ActionResult<TypeOfGameDto> UpdateTypeOfGame([FromRoute]int id, [FromBody]CreateTypOfGameDto dto)
+        [HttpPut("update")]
+        public ActionResult<TypeOfGameDto> UpdateTypeOfGame([FromBody]UpdateNameDto newTypeNameDto)
         {
-            var updatedType = _typeOfGameService.UpdateTypeOfGame(id, dto);
+            var updatedType = _typeOfGameService.UpdateTypeOfGame(newTypeNameDto);
 
-            return Created($"update/{id}", updatedType);
+            return Ok(updatedType);
         }
 
 

@@ -44,10 +44,10 @@ namespace TheGameChanger.Controllers
             return NoContent();
         }
 
-        [HttpPut("{id}")]
-        public ActionResult<GameDto> UpdateGame([FromRoute] int id, [FromBody] CreateGameDto gameDto)
+        [HttpPut("update")]
+        public ActionResult<GameDto> UpdateGame([FromBody] UpdateNameDto newGameDto)
         {
-            var updatedGame = _gameService.UpdateGame(id, gameDto);
+            var updatedGame = _gameService.UpdateGame(newGameDto);
 
             return Ok(updatedGame); 
         }

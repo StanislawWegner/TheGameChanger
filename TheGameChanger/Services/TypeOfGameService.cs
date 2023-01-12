@@ -12,7 +12,7 @@ namespace TheGameChanger.Services
         void DeleteAllTypesOfGames();
         void DeleteOneType(string typeName);
         List<TypeOfGameDto> GetAllTypesOfGamesDto();
-        TypeOfGameDto UpdateTypeOfGame(int id, CreateTypOfGameDto dto);
+        TypeOfGameDto UpdateTypeOfGame(UpdateNameDto newTypeNamedto);
         TypeOfGameDto GetTypeByName(string typeName);
         IEnumerable<GameDto> ListOfGamesForOneType(string typeName);
         int QuantityOfGamesForOneType(string typeName);
@@ -54,7 +54,7 @@ namespace TheGameChanger.Services
 
             if (type is null)
             {
-                throw new NotFoundException("Type not found");
+                throw new NotFoundException("Taki gatunek nie istnieje");
             }
 
             var result = _mapper.Map<TypeOfGameDto>(type);
@@ -75,7 +75,7 @@ namespace TheGameChanger.Services
                 .FirstOrDefault
                 (t => t.Name.ToLower().Replace(" ", "") == typeName.ToLower().Replace(" ",""));
             if (type is null)
-                throw new NotFoundException("Type was not found");
+                throw new NotFoundException("Taki gatunek nie istnieje");
             
             _dbContext.Remove(type);
             _dbContext.SaveChanges();
@@ -90,7 +90,7 @@ namespace TheGameChanger.Services
                 (t => t.Name.ToLower().Replace(" ", "") == typeName.ToLower().Replace(" ", ""));
 
             if (type is null)
-                throw new NotFoundException("Type was not found");
+                throw new NotFoundException("Taki gatunek nie istnieje");
 
             var games =  type.Games.ToList();
 
@@ -107,24 +107,36 @@ namespace TheGameChanger.Services
                (t => t.Name.ToLower().Replace(" ", "") == typeName.ToLower().Replace(" ", ""));
 
             if (type is null)
-                throw new NotFoundException("Type was not found");
+                throw new NotFoundException("Taki gatunek nie istnieje");
 
             var gamesQuantity = type.Games.Count;
 
             return gamesQuantity;
         }
 
-        public TypeOfGameDto UpdateTypeOfGame(int id, CreateTypOfGameDto dto)
+        public TypeOfGameDto UpdateTypeOfGame(UpdateNameDto newTypeNameDto)
         {
-            var typeToUpdate = _dbContext.Types.FirstOrDefault(t => t.Id == id);
-            if (typeToUpdate is null)
-                throw new NotFoundException("Type was not found");
+            var typeToUpdate = _dbContext
+                .Types
+                .Include(t => t.Games)
+                .FirstOrDefault
+                (t => t.Name.ToLower().Replace(" ", "") == newTypeNameDto.Name.ToLower().Replace(" ",""));
 
-            typeToUpdate.Name = dto.Name;
-            var updatedType = _mapper.Map<TypeOfGame>(typeToUpdate);
+            if (typeToUpdate is null)
+                throw new NotFoundException("Taki gatunek nie istnieje");
+
+            var checkNewName = _dbContext.Types.FirstOrDefault
+                (t => t.Name.ToLower().Replace(" ", "") == newTypeNameDto.NewName.ToLower().Replace(" ", ""));
+
+            
+            if(checkNewName != null && checkNewName.Id != typeToUpdate.Id)
+            {
+                throw new DataExistsException("Gatunek o proponowanej nazwie już istnieje");
+            }
+            typeToUpdate.Name = newTypeNameDto.NewName;
 
             _dbContext.SaveChanges();
-            return _mapper.Map<TypeOfGameDto>(updatedType);
+            return _mapper.Map<TypeOfGameDto>(typeToUpdate);
         }
     }
 }

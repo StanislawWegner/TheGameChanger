@@ -12,7 +12,7 @@ namespace TheGameChanger.Services
         GameDto CreateGame(CreateGameDto dto);
         GameDto GetByName(string gameName);
         void DeleteGame(CreateGameDto dto);
-        GameDto UpdateGame(int id, CreateGameDto gameDto);
+        GameDto UpdateGame(UpdateNameDto newGameDto);
         void DeleteAllGames();
         List<GameDto> GamesOlderThan30Days();
         GameDto RandomGame();
@@ -49,7 +49,7 @@ namespace TheGameChanger.Services
                 .FirstOrDefault(g => g.Name.ToLower().Replace(" ", "") == gameName.ToLower().Replace(" ", ""));
 
             if (game is null)
-                throw new NotFoundException("Game not found");
+                throw new NotFoundException("Gry nie znaleziono");
 
             var result = _mapper.Map<GameDto>(game);
 
@@ -64,7 +64,7 @@ namespace TheGameChanger.Services
 
             if(game != null)
             {
-                throw new DataExistsException("Game with that name already exists");
+                throw new DataExistsException("Gra o takiej nazwie już istnieje");
             }
             
             var type = _dbContext
@@ -73,7 +73,7 @@ namespace TheGameChanger.Services
                 .FirstOrDefault(t => t.Name.ToLower().Replace(" ", "") == dto.Type.ToLower().Replace(" ",""));
 
             if (type is null)
-                throw new NotFoundException("This type of game do not exists");
+                throw new NotFoundException("Taki gatunek gry nie istnieje");
 
             var newGame = _mapper.Map<Game>(dto);
             newGame.TypeOfGameId = type.Id;
@@ -91,34 +91,42 @@ namespace TheGameChanger.Services
                 (g => g.Name.ToLower().Replace(" ", "") == dto.Name.ToLower().Replace(" ", ""));
 
             if (game is null)
-                throw new NotFoundException("Game with this name do not exists");
+                throw new NotFoundException("Gra o takiej nazwie nie istnieje");
 
             var type = _dbContext.Types.FirstOrDefault
                 (t => t.Name.ToLower().Replace(" ", "") == dto.Type.ToLower().Replace(" ", ""));
 
             if (type is null)
-                throw new NotFoundException("This type of game do not exist");
+                throw new NotFoundException("Taki gatunek gry nie istnieje");
 
             if (game.TypeOfGameId != type.Id)
-                throw new NotFoundException("Name and type do not belong to the same game");
+                throw new NotFoundException("Nazwa i gatunek nie należą do tej samej gry");
 
             _dbContext.Games.Remove(game);
             _dbContext.SaveChanges();
         }
 
-        public GameDto UpdateGame(int id, CreateGameDto gameDto)
+        public GameDto UpdateGame(UpdateNameDto newGameNameDto)
         {
-            var game = _dbContext.Games.FirstOrDefault(g => g.Id == id);
+            var game = _dbContext.Games.Include(g => g.TypeOfGame)
+                .FirstOrDefault(g => g.Name.ToLower().Replace(" ", "") == newGameNameDto.Name.ToLower().Replace(" ", ""));
             if (game is null) 
-                throw new NotFoundException("Game not found");
+                throw new NotFoundException("Taka gra nie istnieje");
 
-            var updatedGame = _mapper.Map<CreateGameDto, Game>(gameDto, game);
+            var checkNewName = _dbContext.Games.FirstOrDefault
+                (t => t.Name.ToLower().Replace(" ", "") == newGameNameDto.NewName.ToLower().Replace(" ", ""));
 
-            var GameAsAResponse = _mapper.Map<GameDto>(updatedGame);
+            if(checkNewName != null && checkNewName.Id != game.Id)
+            {
+                throw new DataExistsException("Gra o proponowanej nazwie już istnieje");
+            }
+            game.Name = newGameNameDto.NewName;
 
             _dbContext.SaveChanges();
 
-            return GameAsAResponse;
+            var gameDto = _mapper.Map<GameDto>(game);
+
+            return gameDto;
         }
 
         public void DeleteAllGames()
