@@ -39,7 +39,7 @@ namespace TheGameChanger.Controllers
         public ActionResult DeleteAllTypesOfGames()
         {
             _typeOfGameService.DeleteAllTypesOfGames();
-            return Ok("All types of games deleted");
+            return NoContent();
         }
 
         [HttpDelete("deleteOneType/{typeName}")]

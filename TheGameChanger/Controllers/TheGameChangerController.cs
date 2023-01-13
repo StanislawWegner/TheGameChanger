@@ -57,7 +57,7 @@ namespace TheGameChanger.Controllers
         {
             _gameService.DeleteAllGames();
 
-            return Ok("Games deleted");
+            return NoContent();
         }
 
         [HttpGet("CheckForOldGames")]

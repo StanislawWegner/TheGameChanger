@@ -30,6 +30,12 @@ namespace TheGameChanger.Services
         }
         public TypeOfGameDto CreateTypeOfGame(CreateTypOfGameDto dto)
         {
+            var checkType = _dbContext.Types
+                .FirstOrDefault(t => t.Name.ToLower().Replace(" ", "") == dto.Name.ToLower().Replace(" ", ""));
+
+            if (checkType != null)
+                throw new DataExistsException("Podany gatunek gry już istnieje");
+
             var typeOfGame = _mapper.Map<TypeOfGame>(dto);
             _dbContext.Types.Add(typeOfGame);
             _dbContext.SaveChanges();
